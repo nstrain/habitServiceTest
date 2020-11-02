@@ -1,4 +1,4 @@
-# CS 262 Monopoly Webservice
+# a pushCS 262 Monopoly Webservice
 
 This is the data service application for the [CS 262 sample Monopoly project](https://github.com/calvin-cs262-organization/monopoly-project) 
 and it is deployed here:
