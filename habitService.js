@@ -61,7 +61,7 @@ function readHelloMessage(req, res) {
 }
 
 function readUsers(req, res, next) {
-    db.many("SELECT * FROM username")
+    db.many("SELECT * FROM UserTable")
         .then(data => {
             res.send(data);
         })
@@ -81,7 +81,7 @@ function readBuddies(req, res, next) {
 }
 //////////////////Everything below this is unchanged from monopoly
 function readUser(req, res, next) {
-    db.oneOrNone(`SELECT * FROM username WHERE id=${req.params.id}`)
+    db.oneOrNone(`SELECT * FROM UserTable WHERE buddy1=${req.params.id}`)
         .then(data => {
             returnDataOr404(res, data);
         })
