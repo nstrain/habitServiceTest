@@ -30,7 +30,7 @@ router.use(express.json());
 router.get("/", readHelloMessage);
 router.get("/users", readUsers);
 router.get("/buddies", readBuddies)
-router.get("/players/:id", readPlayer);
+router.get("/users/:id", readUser);
 router.put("/players/:id", updatePlayer);
 router.post('/players', createPlayer);
 router.delete('/players/:id', deletePlayer);
@@ -80,8 +80,8 @@ function readBuddies(req, res, next) {
         })
 }
 //////////////////Everything below this is unchanged from monopoly
-function readPlayer(req, res, next) {
-    db.oneOrNone(`SELECT * FROM Player WHERE id=${req.params.id}`)
+function readUser(req, res, next) {
+    db.oneOrNone(`SELECT * FROM username WHERE id=${req.params.id}`)
         .then(data => {
             returnDataOr404(res, data);
         })
