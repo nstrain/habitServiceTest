@@ -1,74 +1,122 @@
-DROP TABLE IF EXISTS Buddies;
-DROP TABLE IF EXISTS Habit;
-DROP TABLE IF EXISTS HabitCategory;
-DROP TABLE IF EXISTS UserTable;
+--Written By: Andrew Baker
+--Date: 10.27.20
 
---create a category so that we don't have to update app to
--- change the categories
-CREATE TABLE HabitCategory (
-    category varchar(50) NOT NULL PRIMARY KEY
-    );
+--Queries to be used for various screens in the habbit buddy application
+--NOT UP TO DATE WITH THE CURRENT SCHEMA. 
 
-CREATE TABLE Habit (
-	ID integer PRIMARY KEY, 
-	habit varchar(50) NOT NULL,
-    category varchar(50) REFERENCES HabitCategory(category)
-	);
+--Buddies: I THINK THIS SHOULD WORK, BUT IT MIGHT END UP SHOWING DUPLICATES OF THE PRIMARY USERS DATA.
+---NEED TO READ: list of buddies, details including firstName, lastName, habitGoal, habitCategory, hobby, email, profile url
+---NEED TO WRITE: none
+SELECT firstName, lastName, emailAddress, phone, profileURL, hobby, habitGoal
+    FROM UserTable, Buddies
+    WHERE (buddy1 = UserTable.ID
+        OR buddy2 = UserTable.ID)
 
--- Contains all user data including hobbies and the general habit goal, but not the specific category.
-CREATE TABLE UserTable (
-	ID integer PRIMARY KEY,
-    firstName varchar(15),
-    lastName varchar(15),
-	emailAddress varchar(50) NOT NULL,
-    phone varchar(20) NOT NULL,
-	username varchar(50) NOT NULL,
-    password varchar(20) NOT NULL,
-    dob date,
-    profileURL varchar(200) NOT NULL,
-    hobby varchar(120),
-    habitGoal varchar(120),
-    notifications boolean,
-    theme varchar(6)
-	);
+    ORDER BY lastName ASC
 
---schema suggested in class, doesn't require buddy relationship to be two ways
--- Builds table pairing up buddies and habits. Users can be in the table more than once, allowing for multiple buddies.
---      Also allows for users to be with different habits, which could allow for multiple habits at once, should we decide to implement that. 
-CREATE TABLE Buddies (
-    buddy1 integer REFERENCES UserTable(ID),
-    buddy2 integer REFERENCES UserTable(ID),
-    buddy1HabitID integer REFERENCES Habit(ID),
-    PRIMARY KEY (buddy1, buddy2, buddy1HabitID)
-    );
+--Edit Profile
+---NEED TO READ: Current user data, firstName, lastName, habitGoal, habitCategory, hobby, email, profile url
+---NEED TO WRITE: Everything from above
+SELECT firstName, lastName, emailAddress, phone, profileURL, hobby, habitGoal, 
+    FROM UserTable
+    WHERE ID = ${req.params.ID}
 
--- Allow users to select data from the tables.
-GRANT SELECT ON Habit TO PUBLIC;
-GRANT SELECT ON UserTable TO PUBLIC;
-GRANT SELECT ON Buddies TO PUBLIC;
-GRANT SELECT ON HabitCategory TO PUBLIC;
+UPDATE UserTable
+    SET firstName=$(),                      --UPDATE
+        lastName=$(),                       --UPDATE
+        emailAddress=$(),                   --UPDATE
+        phone=$(),                          --UPDATE
+        username=$(username),
+        password=$(password),
+        dob=$(),                            --UPDATE
+        profileURL=$(),                     --UPDATE
+        hobby=$(),                          --UPDATE
+        habitGoal=$(),                      --UPDATE
+        notifications=$(notifications),
+        theme=$(theme)
 
-INSERT INTO HabitCategory VALUES ('School');
-INSERT INTO HabitCategory VALUES ('Exercise');
-INSERT INTO HabitCategory VALUES ('Leisure');
+    WHERE ID = ${req.params.ID}
 
-INSERT INTO UserTable VALUES (1, 'Andrew', 'Baker', 'andrew@email.com', '(616)-123-1234', 'andba', 'password', '2020-08-22', 'https://th.bing.com/th/id/OIP.suYiHgQnIAH_48Q64UHAQAHaHa?pid=Api&rs=1', 'Reading', 'studying', false, 'light');
-INSERT INTO UserTable VALUES (2, 'Dawson', 'Buist', 'Dawson@email.com', '(616)-123-1234', 'dawbu', 'password', '2020-08-22', 'https://th.bing.com/th/id/OIP.suYiHgQnIAH_48Q64UHAQAHaHa?pid=Api&rs=1', 'Reading', 'studying', false, 'light');
-INSERT INTO UserTable VALUES (3, 'Joe', 'Pastucha', 'Joe@email.com', '(616)-123-1234', 'joepa', 'password', '2020-08-22', 'https://th.bing.com/th/id/OIP.suYiHgQnIAH_48Q64UHAQAHaHa?pid=Api&rs=1', 'Reading', 'studying', false, 'light');
-INSERT INTO UserTable VALUES (4, 'Belina', 'Sainju', 'Belina@email.com', '(616)-123-1234', 'belsa', 'password', '2020-08-22', 'https://th.bing.com/th/id/OIP.suYiHgQnIAH_48Q64UHAQAHaHa?pid=Api&rs=1', 'Reading', 'studying', false, 'light');
-INSERT INTO UserTable VALUES (5, 'Nathan', 'Strain', 'Nathan@email.com', '(616)-123-1234', 'natst', 'password', '2020-08-22', 'https://th.bing.com/th/id/OIP.suYiHgQnIAH_48Q64UHAQAHaHa?pid=Api&rs=1', 'Reading', 'studying', false, 'light');
-INSERT INTO UserTable VALUES (6, 'Kelsey', 'Yen', 'Kelsey@email.com', '(616)-123-1234', 'kelye', 'password', '2020-08-22', 'https://th.bing.com/th/id/OIP.suYiHgQnIAH_48Q64UHAQAHaHa?pid=Api&rs=1', 'Reading', 'studying', false, 'light');
+--Empty Habits 
+---NEED TO READ: None
+---NEED TO WRITE: habits, written specifically to the userprofile
 
-INSERT INTO Habit VALUES (1, 'Study', 'School');
-INSERT INTO Habit VALUES (2, 'Work on Homework', 'School');
-INSERT INTO Habit VALUES (3, 'Run', 'Exercise');
-INSERT INTO Habit VALUES (4, 'Lift', 'Exercise');
-INSERT INTO Habit VALUES (5, 'Read', 'Leisure');
-INSERT INTO Habit VALUES (6, 'Spend time with friends', 'Leisure');
+UPDATE UserTable
+    SET firstName=$(firstName),
+        lastName=$(lastName),
+        emailAddress=$(emailAddress),
+        phone=$(phone),
+        username=$(username),
+        password=$(password),
+        dob=$(dob),
+        profileURL=$(profileURL),
+        hobby=$(hobby),
+        habitGoal=$(),                      --UPDATE
+        notifications=$(notifications),
+        theme=$(theme)
 
-INSERT INTO Buddies VALUES (1, 2, 1);
-INSERT INTO Buddies VALUES (3, 5, 4);
-INSERT INTO Buddies VALUES (4, 6, 5);
-INSERT INTO Buddies VALUES (2, 1, 1);
-INSERT INTO Buddies VALUES (5, 3, 3);
-INSERT INTO Buddies VALUES (6, 4, 6);
+    WHERE ID = ${req.params.ID}
+
+
+--Empty Profile
+---NEED TO READ: None
+---NEED TO WRITE: Writing all user profile data. Similar to the edit profile. Current user data, firstName, lastName, habitGoal, habitCategory, hobby, email, profile url
+
+UPDATE UserTable
+    SET firstName=$(),                      --UPDATE
+        lastName=$(),                       --UPDATE
+        emailAddress=$(),                   --UPDATE
+        phone=$(),                          --UPDATE
+        username=$(username),
+        password=$(password),
+        dob=$(),                            --UPDATE
+        profileURL=$(),                     --UPDATE
+        hobby=$(),                          --UPDATE
+        habitGoal=$(),                      --UPDATE
+        notifications=$(notifications),
+        theme=$(theme)
+
+    WHERE ID = ${req.params.ID}
+
+--Habit Tracker
+---NEED TO READ: N/A
+---NEED TO WRITE: N/A
+SELECT *
+    FROM 
+    WHERE 
+
+--Home
+---NEED TO READ: List of buddies, days of habits tracked, user's habit
+---NEED TO WRITE: habit stacker information
+SELECT habit, firstName, lastName, buddy1, buddy2
+    FROM UserTable, Habit, Buddies
+    WHERE userID = Username.ID
+        AND habitID = Habit.ID
+        AND buddy1 != Username.ID
+        AND buddy2 != Username.ID
+
+--Login
+---NEED TO READ: user data: username, password
+---NEED TO WRITE: None, maybe create user upon sign up 
+SELECT username, password
+    FROM UserTable
+    WHERE ID = ${req.params.ID}
+
+INSERT INTO UserTable VALUES ($(ID), $(firstName), $(lastName), $(emailAddress), $(phone), $(username), $(password), $(dob), $(profileURL), $(hobby), $(habitGoal), true, 'light')
+
+
+--Profile
+---NEED TO READ: user data: firstName, lastName, habitGoal, habitCategory, hobby, email, profile url
+---NEED TO WRITE: None
+SELECT firstName, lastName, emailAddress, phone, profileURL, hobby, habitGoal, habit, category
+    FROM UserTable, Habit
+    WHERE ID = ${req.params.ID}
+        AND UserTable.ID = userID
+    
+
+--Settings: NOT FINISHED, NEED PARAM STUFF
+---NEED TO READ: Current settings information? May be stored locally
+---NEED TO WRITE: Same as above. 
+SELECT password, notifications, theme
+    FROM UserTable
+    WHERE ID = ${req.params.ID}

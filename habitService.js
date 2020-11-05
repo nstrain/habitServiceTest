@@ -29,6 +29,7 @@ router.use(express.json());
 
 router.get("/", readHelloMessage);
 router.get("/users", readUsers);
+router.get("/buddies", readBuddies)
 router.get("/players/:id", readPlayer);
 router.put("/players/:id", updatePlayer);
 router.post('/players', createPlayer);
@@ -61,6 +62,16 @@ function readHelloMessage(req, res) {
 
 function readUsers(req, res, next) {
     db.many("SELECT * FROM username")
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            next(err);
+        })
+}
+
+function readBuddies(req, res, next) {
+    db.many("SELECT * FROM Buddies")
         .then(data => {
             res.send(data);
         })
