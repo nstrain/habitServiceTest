@@ -71,7 +71,7 @@ function readUsers(req, res, next) {
 }
 
 function readBuddies(req, res, next) {
-    db.many("SELECT * FROM Buddies")
+    db.many("SELECT * FROM buddies")
         .then(data => {
             res.send(data);
         })
